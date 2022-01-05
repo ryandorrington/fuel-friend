@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import "./FuelFriend.css";
 import SearchForm from "./SearchForm";
 import Map from "./Map";
 
 function FuelFriend() {
+  const [origin, setOrigin] = useState("kingsley");
+  const [destination, setDestination] = useState("balcatta");
+
   return (
     <div className="FuelFriend">
-      <h1>Yes</h1>
-      <SearchForm />
-      <Map />
+      <SearchForm
+        origin={origin}
+        destination={destination}
+        setOrigin={setOrigin}
+        setDestination={setDestination}
+      />
+      <Map origin={origin} destination={destination} />
     </div>
   );
 }

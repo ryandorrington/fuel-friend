@@ -1,23 +1,22 @@
 import React from "react";
-import "./SearchForm.css";
+import PlacesAutoComplete from "./PlacesAutoComplete";
 
-function SearchForm() {
+const SearchForm = (props) => {
+  const handleOriginChange = (originValue) => {
+    props.setOrigin(originValue);
+  };
+
+  const handleDestinationChange = (destinationValue) => {
+    props.setDestination(destinationValue);
+  };
+
   return (
-    <div className="SearchForm">
-      <input
-        type="text"
-        id="to"
-        placeholder="Destination"
-        class="form-control"
-      ></input>
-      <input
-        type="text"
-        id="to"
-        placeholder="Destination"
-        class="form-control"
-      ></input>
-    </div>
+    <form onSubmit={handleSearchFormSubmit}>
+      <PlacesAutoComplete onOriginChange={handleOriginChange} />
+      <PlacesAutoComplete onDestinationChange={handleDestinationChange} />
+      <input type="submit" value="Submit" />
+    </form>
   );
-}
+};
 
 export default SearchForm;

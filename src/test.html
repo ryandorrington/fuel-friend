@@ -1,0 +1,2881 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Best Fuel Station On Route</title>
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <script src="https://kit.fontawesome.com/ab2155e76b.js" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <!-- <link href="style.css" rel="stylesheet" /> -->
+    <style>body {
+        color: #5bc0de;
+        font-family: "Poppins", sans-serif;
+      }
+      
+      .fa-map-marker-alt,
+      .fa-dot-circle {
+        color: #5bc0de;
+      }
+      
+      /*Jumbotron*/
+      .jumbotron {
+        background-color: transparent;
+        margin: 0;
+        padding: 10px;
+      }
+      
+      .jumbotron h1 {
+        letter-spacing: 2.5px;
+        font-size: 3.5em;
+      }
+      
+      .jumbotron h1,
+      .jumbotron p {
+        text-align: center;
+      }
+      
+      /*map*/
+      #googleMap {
+        width: 80%;
+        height: 400px;
+        margin: 10px auto;
+      }
+      
+      /*output box*/
+      #output {
+        text-align: center;
+        font-size: 2em;
+        margin: 20px auto;
+      }
+      
+      #mode {
+        color: black;
+      }</style>
+</head>
+<body>
+    <p>This website is in testing stages so beware that the appearance has not been completed and you may experience bugs.<br>
+        It is currently only functional in Perth and only shows the price of 91 Unleaded.<br>
+        The fuel data may also be out of date.<br><br>
+        To be eligible for $5, please email your testing survey to <a href = "mailto: fuelfriendau@gmail.com">fuelfriendau@gmail.com</a>.<br>
+        Please answer all questions below:<br>
+        1. On what day and at what time do you usually fill up your car?<br>
+        2. Do you prioritise price, distance, brand, or other when finding a fuel station?<br>
+        3. How many minutes would you add to your travel route to get cheaper fuel?<br>
+        4. what location did you put as your start and destination?<br>
+        5. How old are you?<br>
+        6. Are you unemployed, casual, full-time, or part-time?<br>
+        7. Is your work commute the same everyday?<br>
+        8. Did you experience any problems with the website? If so, what were they?<br>
+        9. Do you always go to the same fuel station?<br>
+        10. How do you usually search for a fuel station?<br>    
+        <br>
+        How to use app: Put in a start and finish location and scroll down. The website will calculate the most efficient fuel station for you to go to.
+        It factors in price and time. You can click the link to google maps and it will show you the fastest     route.
+
+    </p>
+
+    <div class="jumbotron">
+        <div class="container-fluid">
+            <h1>Best Fuel Station On Route</h1>
+           
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="from" class="col-xs-2 control-label"><i class="far fa-dot-circle"></i></label>
+                    <div class="col-xs-4">
+                        <input type="text" id="from" placeholder="Origin" class="form-control">
+                    </div>
+               </div>
+               <div class="form-group">
+                
+                    <label for="to" class="col-xs-2 control-label"><i class="fas fa-map-marker-alt"></i></label>
+                    <div class="col-xs-4">
+                        <input type="text" id="to" placeholder="Destination" class="form-control">
+                    </div>
+                  
+                 </div>
+                 
+            </form>
+
+            <div class="col-xs-offset-2 col-xs-10">
+                <button class="btn btn-info btn-lg " onclick="calcRoute();"><i class="fas fa-map-signs"></i></button>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div id="googleMap">
+
+            </div>
+            <div id="output">
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNBzX_z96zmAZU08Z34bsqHV61NtBGbuQ&callback=initMap&v=weekly&libraries=geometry,places""></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
+    <script >var myLatLng = { lat: -31.909589460890988, lng: 115.8089482551038 };
+        var mapOptions = {
+          center: myLatLng,
+          zoom: 7,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+        };
+        
+        //create map
+        var map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
+        
+        //create a DirectionsService object to use the route method and get a result for our request
+        var directionsService = new google.maps.DirectionsService();
+        
+        //create a DirectionsRenderer object which we will use to display the route
+        var directionsDisplay = new google.maps.DirectionsRenderer();
+        
+        //bind the DirectionsRenderer to the map
+        directionsDisplay.setMap(map);
+        
+        //define calcRoute function
+        function calcRoute() {
+          //create request
+          var request = {
+            origin: document.getElementById("from").value,
+            destination: document.getElementById("to").value,
+            travelMode: google.maps.TravelMode.DRIVING, //WALKING, BYCYCLING, TRANSIT
+            unitSystem: google.maps.UnitSystem.IMPERIAL,
+          };
+        
+          //pass the request to the route method
+          directionsService.route(request, function (result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+              const stations = [
+                {
+                  title: "147.7: X Convenience Alkimos",
+                  description:
+                    "Address: 58 Montana Cres, ALKIMOS, Phone: (08) 9562 4320",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "147.7",
+                  "trading-name": "X Convenience Alkimos",
+                  location: "ALKIMOS",
+                  address: "58 Montana Cres",
+                  phone: "(08) 9562 4320",
+                  latitude: "-31.621433",
+                  longitude: "115.688754",
+                  "site-features": ", ",
+                },
+                {
+                  title: "149.5: NightOwl Shell Highgate",
+                  description:
+                    "Address: 3 Guildford Rd, MOUNT LAWLEY, Phone: 0424 506 506, Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                  brand: "Shell",
+                  date: "2021-12-22",
+                  price: "149.5",
+                  "trading-name": "NightOwl Shell Highgate",
+                  location: "MOUNT LAWLEY",
+                  address: "3 Guildford Rd",
+                  phone: "0424 506 506",
+                  latitude: "-31.938231",
+                  longitude: "115.877113",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                },
+                {
+                  title: "149.5: Vibe West Swan",
+                  description:
+                    "Address: 6639 West Swan Rd, WEST SWAN, Site features:  ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Restaurant, Open Mon-Fri: 05:00-22:00, Sat: 06:00-21:00, Sun: 06:00-21:00",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "149.5",
+                  "trading-name": "Vibe West Swan",
+                  location: "WEST SWAN",
+                  address: "6639 West Swan Rd",
+                  phone: null,
+                  latitude: "-31.839036",
+                  longitude: "115.990655",
+                  "site-features":
+                    " ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Restaurant, Open Mon-Fri: 05:00-22:00, Sat: 06:00-21:00, Sun: 06:00-21:00",
+                },
+                {
+                  title: "149.7: Puma Dayton",
+                  description: "Address: 8 Repton St, DAYTON, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "149.7",
+                  "trading-name": "Puma Dayton",
+                  location: "DAYTON",
+                  address: "8 Repton St",
+                  phone: null,
+                  latitude: "-31.851089",
+                  longitude: "115.968786",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "151.5: Puma Neerabup",
+                  description:
+                    "Address: 2056 Wanneroo Rd, NEERABUP, Phone: (08) 9407 5053, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "151.5",
+                  "trading-name": "Puma Neerabup",
+                  location: "NEERABUP",
+                  address: "2056 Wanneroo Rd",
+                  phone: "(08) 9407 5053",
+                  latitude: "-31.67127",
+                  longitude: "115.742022",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "152.5: Vibe Morley",
+                  description:
+                    "Address: 430 Morley Dr, MORLEY, Site features:  ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets, Open 24 hours",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "152.5",
+                  "trading-name": "Vibe Morley",
+                  location: "MORLEY",
+                  address: "430 Morley Dr",
+                  phone: null,
+                  latitude: "-31.887832",
+                  longitude: "115.889889",
+                  "site-features":
+                    " ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets, Open 24 hours",
+                },
+                {
+                  title: "152.9: 7-Eleven Joondalup",
+                  description:
+                    "Address: 8 Buick Way, JOONDALUP, Phone: (08) 9300 1459, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "152.9",
+                  "trading-name": "7-Eleven Joondalup",
+                  location: "JOONDALUP",
+                  address: "8 Buick Way",
+                  phone: "(08) 9300 1459",
+                  latitude: "-31.753934",
+                  longitude: "115.765241",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.3: Vibe Bassendean",
+                  description:
+                    "Address: 309 Guildford Rd, BASSENDEAN, Site features:  ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open 24 hours",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "153.3",
+                  "trading-name": "Vibe Bassendean",
+                  location: "BASSENDEAN",
+                  address: "309 Guildford Rd",
+                  phone: null,
+                  latitude: "-31.901105",
+                  longitude: "115.959118",
+                  "site-features":
+                    " ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open 24 hours",
+                },
+                {
+                  title: "153.5: Vibe Bedford",
+                  description: "Address: 168 Walter Rd West, BEDFORD, Open 24 hours",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "153.5",
+                  "trading-name": "Vibe Bedford",
+                  location: "BEDFORD",
+                  address: "168 Walter Rd West",
+                  phone: null,
+                  latitude: "-31.9",
+                  longitude: "115.889257",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.5: Puma Malaga",
+                  description:
+                    "Address: 1896 Beach Rd, MALAGA, Phone: (08) 9248 4406, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "153.5",
+                  "trading-name": "Puma Malaga",
+                  location: "MALAGA",
+                  address: "1896 Beach Rd",
+                  phone: "(08) 9248 4406",
+                  latitude: "-31.85295",
+                  longitude: "115.882059",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.5: United Neerabup",
+                  description:
+                    "Address: 2038 Wanneroo Rd, NEERABUP, Phone: (08) 6118 6596, Site features:  Air Bottled AdBlue Bottled Gas EFTPOS Fuel Cards Ice Toilets Trailer Hire Truck Friendly Water, Open Mon-Fri: 06:00-19:00, Sat: 06:00-19:00, Sun: 06:00-19:00",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "153.5",
+                  "trading-name": "United Neerabup",
+                  location: "NEERABUP",
+                  address: "2038 Wanneroo Rd",
+                  phone: "(08) 6118 6596",
+                  latitude: "-31.672434",
+                  longitude: "115.743141",
+                  "site-features":
+                    " Air Bottled AdBlue Bottled Gas EFTPOS Fuel Cards Ice Toilets Trailer Hire Truck Friendly Water, Open Mon-Fri: 06:00-19:00, Sat: 06:00-19:00, Sun: 06:00-19:00",
+                },
+                {
+                  title: "153.7: Puma Alexander Heights",
+                  description:
+                    "Address: 200 Mirrabooka Ave, ALEXANDER HEIGHTS, Phone: (08) 9343 4422, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "153.7",
+                  "trading-name": "Puma Alexander Heights",
+                  location: "ALEXANDER HEIGHTS",
+                  address: "200 Mirrabooka Ave",
+                  phone: "(08) 9343 4422",
+                  latitude: "-31.829326",
+                  longitude: "115.852831",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.7: Puma Bayswater",
+                  description:
+                    "Address: 502 Guildford Rd, BAYSWATER, Phone: (08) 9379 1322, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "153.7",
+                  "trading-name": "Puma Bayswater",
+                  location: "BAYSWATER",
+                  address: "502 Guildford Rd",
+                  phone: "(08) 9379 1322",
+                  latitude: "-31.919556",
+                  longitude: "115.929069",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.7: Puma Dianella",
+                  description:
+                    "Address: 61 Walter Rd West, DIANELLA, Phone: (08) 9473 1213, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "153.7",
+                  "trading-name": "Puma Dianella",
+                  location: "DIANELLA",
+                  address: "61 Walter Rd West",
+                  phone: "(08) 9473 1213",
+                  latitude: "-31.906435",
+                  longitude: "115.881917",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.7: Puma Joondalup",
+                  description:
+                    "Address: 49 Candlewood Bvd, JOONDALUP, Phone: (08) 9300 0372, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "153.7",
+                  "trading-name": "Puma Joondalup",
+                  location: "JOONDALUP",
+                  address: "49 Candlewood Bvd",
+                  phone: "(08) 9300 0372",
+                  latitude: "-31.728704",
+                  longitude: "115.76494",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "153.7: Puma Kiara",
+                  description:
+                    "Address: 157 Morley Dr, KIARA, Phone: (08) 9379 3191, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "153.7",
+                  "trading-name": "Puma Kiara",
+                  location: "KIARA",
+                  address: "157 Morley Dr",
+                  phone: "(08) 9379 3191",
+                  latitude: "-31.887138",
+                  longitude: "115.93832",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "153.7: Puma Madeley",
+                  description:
+                    "Address: 182 Wanneroo Rd, MADELEY, Phone: (08) 9409 8910, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "153.7",
+                  "trading-name": "Puma Madeley",
+                  location: "MADELEY",
+                  address: "182 Wanneroo Rd",
+                  phone: "(08) 9409 8910",
+                  latitude: "-31.817018",
+                  longitude: "115.821127",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "153.9: United Bassendean",
+                  description:
+                    "Address: 335 Collier Rd, BASSENDEAN, Phone: (08) 6336 7768, Site features:  EFTPOS Fuel Cards Ice Water, Open Mon-Fri: 06:00-20:00, Sat: 06:00-19:00, Sun: 06:00-19:00",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "153.9",
+                  "trading-name": "United Bassendean",
+                  location: "BASSENDEAN",
+                  address: "335 Collier Rd",
+                  phone: "(08) 6336 7768",
+                  latitude: "-31.905283",
+                  longitude: "115.932367",
+                  "site-features":
+                    " EFTPOS Fuel Cards Ice Water, Open Mon-Fri: 06:00-20:00, Sat: 06:00-19:00, Sun: 06:00-19:00",
+                },
+                {
+                  title: "153.9: 7-Eleven Bassendean",
+                  description:
+                    "Address: 302-318 Collier Rd, BASSENDEAN, Phone: (08) 9379 9590, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "153.9",
+                  "trading-name": "7-Eleven Bassendean",
+                  location: "BASSENDEAN",
+                  address: "302-318 Collier Rd",
+                  phone: "(08) 9379 9590",
+                  latitude: "-31.9063297",
+                  longitude: "115.9308682",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.9: Caltex Woolworths Ellenbrook",
+                  description:
+                    "Address: 11 Main St, ELLENBROOK, Phone: (08) 9128 4200, Open 24 hours",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "153.9",
+                  "trading-name": "Caltex Woolworths Ellenbrook",
+                  location: "ELLENBROOK",
+                  address: "11 Main St",
+                  phone: "(08) 9128 4200",
+                  latitude: "-31.780889",
+                  longitude: "115.969189",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.9: Caltex Woolworths Greenwood",
+                  description:
+                    "Address: 37 Canham Way, GREENWOOD, Phone: (08) 6186 0388, Open 24 hours",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "153.9",
+                  "trading-name": "Caltex Woolworths Greenwood",
+                  location: "GREENWOOD",
+                  address: "37 Canham Way",
+                  phone: "(08) 6186 0388",
+                  latitude: "-31.822072",
+                  longitude: "115.820539",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "153.9: BP Morley",
+                  description:
+                    "Address: 335 Walter Rd West, MORLEY, Phone: (08) 9275 7522",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "153.9",
+                  "trading-name": "BP Morley",
+                  location: "MORLEY",
+                  address: "335 Walter Rd West",
+                  phone: "(08) 9275 7522",
+                  latitude: "-31.89446",
+                  longitude: "115.90533",
+                  "site-features": ", ",
+                },
+                {
+                  title: "155.5: Liberty Banksia Grove ",
+                  description:
+                    "Address: 7 Honeybee Pde, BANKSIA GROVE, Phone: 0430 755 130, Open Mon-Fri: 05:00-23:00, Sat: 05:00-23:00, Sun: 05:00-23:00",
+                  brand: "Liberty",
+                  date: "2021-12-22",
+                  price: "155.5",
+                  "trading-name": "Liberty Banksia Grove ",
+                  location: "BANKSIA GROVE",
+                  address: "7 Honeybee Pde",
+                  phone: "0430 755 130",
+                  latitude: "-31.703225",
+                  longitude: "115.798512",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-23:00, Sat: 05:00-23:00, Sun: 05:00-23:00",
+                },
+                {
+                  title: "155.5: Liberty Landsdale",
+                  description:
+                    "Address: 2 Cowle St, LANDSDALE, Open Mon-Fri: 05:00-21:00, Sat: 06:00-20:00, Sun: 06:00-20:00",
+                  brand: "Liberty",
+                  date: "2021-12-22",
+                  price: "155.5",
+                  "trading-name": "Liberty Landsdale",
+                  location: "LANDSDALE",
+                  address: "2 Cowle St",
+                  phone: null,
+                  latitude: "-31.802758",
+                  longitude: "115.837737",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-21:00, Sat: 06:00-20:00, Sun: 06:00-20:00",
+                },
+                {
+                  title: "155.5: Better Choice Malaga",
+                  description:
+                    "Address: 3 Carson Rd, MALAGA, Phone: (08) 9248 2671, Open Mon-Fri: 05:00-20:00, Sat: 06:00-19:00, Sun: 07:00-19:00",
+                  brand: "Better Choice",
+                  date: "2021-12-22",
+                  price: "155.5",
+                  "trading-name": "Better Choice Malaga",
+                  location: "MALAGA",
+                  address: "3 Carson Rd",
+                  phone: "(08) 9248 2671",
+                  latitude: "-31.855136",
+                  longitude: "115.878229",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-20:00, Sat: 06:00-19:00, Sun: 07:00-19:00",
+                },
+                {
+                  title: "155.5: Vibe Nollamara",
+                  description:
+                    "Address: 66 Sylvia St, NOLLAMARA, Phone: (08) 9349 6904, Open Mon-Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-19:00",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "155.5",
+                  "trading-name": "Vibe Nollamara",
+                  location: "NOLLAMARA",
+                  address: "66 Sylvia St",
+                  phone: "(08) 9349 6904",
+                  latitude: "-31.880514",
+                  longitude: "115.840339",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-19:00",
+                },
+                {
+                  title: "155.9: Coles Express Bayswater",
+                  description:
+                    "Address: 34 Jackson St, BAYSWATER, Phone: (08) 6157 5678, Open Mon-Fri: 05:00-22:00, Sat: 05:00-20:00, Sun: 07:00-20:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "155.9",
+                  "trading-name": "Coles Express Bayswater",
+                  location: "BAYSWATER",
+                  address: "34 Jackson St",
+                  phone: "(08) 6157 5678",
+                  latitude: "-31.906734",
+                  longitude: "115.92665",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-22:00, Sat: 05:00-20:00, Sun: 07:00-20:00",
+                },
+                {
+                  title: "155.9: Caltex Woolworths Whitfords",
+                  description:
+                    "Address: 470 Whitfords Ave, HILLARYS, Phone: (08) 6186 0383, Open Mon: 05:00-23:59, Tue: 00:00-23:59, Wed: 05:00-23:59, Thu: 05:00-23:59, Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 06:00-23:59",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "155.9",
+                  "trading-name": "Caltex Woolworths Whitfords",
+                  location: "HILLARYS",
+                  address: "470 Whitfords Ave",
+                  phone: "(08) 6186 0383",
+                  latitude: "-31.796683",
+                  longitude: "115.745505",
+                  "site-features":
+                    ", Open Mon: 05:00-23:59, Tue: 00:00-23:59, Wed: 05:00-23:59, Thu: 05:00-23:59, Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 06:00-23:59",
+                },
+                {
+                  title: "155.9: 7-Eleven Malaga",
+                  description:
+                    "Address: 750 Marshall Rd, MALAGA, Phone: (08) 9248 8058, Site features:  ATM Air Bottled Gas EFTPOS Fuel Cards Ice Water, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "155.9",
+                  "trading-name": "7-Eleven Malaga",
+                  location: "MALAGA",
+                  address: "750 Marshall Rd",
+                  phone: "(08) 9248 8058",
+                  latitude: "-31.856778",
+                  longitude: "115.908098",
+                  "site-features":
+                    " ATM Air Bottled Gas EFTPOS Fuel Cards Ice Water, Open 24 hours",
+                },
+                {
+                  title: "155.9: Caltex Woolworths Mirrabooka",
+                  description:
+                    "Address: 53 Yirrigan Dr, MIRRABOOKA, Phone: (08) 6186 0287, Open 24 hours",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "155.9",
+                  "trading-name": "Caltex Woolworths Mirrabooka",
+                  location: "MIRRABOOKA",
+                  address: "53 Yirrigan Dr",
+                  phone: "(08) 6186 0287",
+                  latitude: "-31.873567",
+                  longitude: "115.861407",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "155.9: 7-Eleven Morley",
+                  description:
+                    "Address: 162 Russell St, MORLEY, Phone: (08) 9370 4759, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "155.9",
+                  "trading-name": "7-Eleven Morley",
+                  location: "MORLEY",
+                  address: "162 Russell St",
+                  phone: "(08) 9370 4759",
+                  latitude: "-31.903344",
+                  longitude: "115.903047",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "157.3: Vibe Wanneroo",
+                  description:
+                    "Address: 964 Wanneroo Rd, WANNEROO, Site features:  Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire, Open Mon: 06:00-21:00, Tue: 06:00-21:00, Wed: 06:00-21:00, Thu: 06:00-21:00, Fri: 06:00-21:00, Sat: 06:00-21:00, Sun: 06:00-21:00",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "157.3",
+                  "trading-name": "Vibe Wanneroo",
+                  location: "WANNEROO",
+                  address: "964 Wanneroo Rd",
+                  phone: null,
+                  latitude: "-31.751382",
+                  longitude: "115.803426",
+                  "site-features":
+                    " Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire, Open Mon: 06:00-21:00, Tue: 06:00-21:00, Wed: 06:00-21:00, Thu: 06:00-21:00, Fri: 06:00-21:00, Sat: 06:00-21:00, Sun: 06:00-21:00",
+                },
+                {
+                  title: "157.5: Puma Landsdale",
+                  description:
+                    "Address: 220 Gnangara Rd, LANDSDALE, Phone: (08) 9409 1232, Open Mon-Fri: 05:00-20:00, Sat: 06:00-19:00, Sun: 07:00-18:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "157.5",
+                  "trading-name": "Puma Landsdale",
+                  location: "LANDSDALE",
+                  address: "220 Gnangara Rd",
+                  phone: "(08) 9409 1232",
+                  latitude: "-31.801116",
+                  longitude: "115.841526",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-20:00, Sat: 06:00-19:00, Sun: 07:00-18:00",
+                },
+                {
+                  title: "157.5: Vibe Osborne Park",
+                  description: "Address: 7 Hutton St, OSBORNE PARK, Open 24 hours",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "157.5",
+                  "trading-name": "Vibe Osborne Park",
+                  location: "OSBORNE PARK",
+                  address: "7 Hutton St",
+                  phone: null,
+                  latitude: "-31.90631",
+                  longitude: "115.813744",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "157.7: BP Greenwood North",
+                  description:
+                    "Address: 1 Canham Way, GREENWOOD, Phone: (08) 6383 6441, Site features:  ATM Bottled Gas Toilets, Open Mon-Fri: 04:30-22:30, Sat: 05:00-22:30, Sun: 05:00-22:30",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "157.7",
+                  "trading-name": "BP Greenwood North",
+                  location: "GREENWOOD",
+                  address: "1 Canham Way",
+                  phone: "(08) 6383 6441",
+                  latitude: "-31.82089",
+                  longitude: "115.815729",
+                  "site-features":
+                    " ATM Bottled Gas Toilets, Open Mon-Fri: 04:30-22:30, Sat: 05:00-22:30, Sun: 05:00-22:30",
+                },
+                {
+                  title: "157.9: Shell Alkimos",
+                  description:
+                    "Address: 12 Longstaff Ave, ALKIMOS, Phone: 08 9554 2372",
+                  brand: "Shell",
+                  date: "2021-12-22",
+                  price: "157.9",
+                  "trading-name": "Shell Alkimos",
+                  location: "ALKIMOS",
+                  address: "12 Longstaff Ave",
+                  phone: "08 9554 2372",
+                  latitude: "-31.628239",
+                  longitude: "115.69118",
+                  "site-features": ", ",
+                },
+                {
+                  title: "157.9: Ampol Foodary Northlands",
+                  description:
+                    "Address: 391 Wanneroo Rd, BALCATTA, Phone: (08) 9349 0497, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "157.9",
+                  "trading-name": "Ampol Foodary Northlands",
+                  location: "BALCATTA",
+                  address: "391 Wanneroo Rd",
+                  phone: "(08) 9349 0497",
+                  latitude: "-31.872542",
+                  longitude: "115.830984",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "157.9: Coles Express Banksia Grove",
+                  description:
+                    "Address: 1001 Joondalup Dr, BANKSIA GROVE, Phone: (08) 6247 4328, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "157.9",
+                  "trading-name": "Coles Express Banksia Grove",
+                  location: "BANKSIA GROVE",
+                  address: "1001 Joondalup Dr",
+                  phone: "(08) 6247 4328",
+                  latitude: "-31.70653",
+                  longitude: "115.802679",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "157.9: 7-Eleven Banksia Grove",
+                  description:
+                    "Address: 1/300 Joseph Banks Bvd, BANKSIA GROVE, Phone: (08) 9206 3385, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "157.9",
+                  "trading-name": "7-Eleven Banksia Grove",
+                  location: "BANKSIA GROVE",
+                  address: "1/300 Joseph Banks Bvd",
+                  phone: "(08) 9206 3385",
+                  latitude: "-31.703423",
+                  longitude: "115.804315",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "157.9: Coles Express Dianella",
+                  description:
+                    "Address: 67 Walter Rd West, DIANELLA, Phone: (08) 6157 5660, Open Mon-Fri: 06:00-22:00, Sat: 07:00-21:00, Sun: 07:00-21:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "157.9",
+                  "trading-name": "Coles Express Dianella",
+                  location: "DIANELLA",
+                  address: "67 Walter Rd West",
+                  phone: "(08) 6157 5660",
+                  latitude: "-31.905801",
+                  longitude: "115.8827",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-22:00, Sat: 07:00-21:00, Sun: 07:00-21:00",
+                },
+                {
+                  title: "157.9: Ampol Foodary Westminster",
+                  description:
+                    "Address: 436 Wanneroo Rd, WESTMINSTER, Phone: (08) 9349 4300, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "157.9",
+                  "trading-name": "Ampol Foodary Westminster",
+                  location: "WESTMINSTER",
+                  address: "436 Wanneroo Rd",
+                  phone: "(08) 9349 4300",
+                  latitude: "-31.867582",
+                  longitude: "115.829765",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "158.9: Coles Express Kingsley",
+                  description:
+                    "Address: 47 Renegade Way, KINGSLEY, Phone: (08) 6157 5650, Open Mon-Fri: 06:00-21:00, Sat: 06:00-20:00, Sun: 07:00-21:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "158.9",
+                  "trading-name": "Coles Express Kingsley",
+                  location: "KINGSLEY",
+                  address: "47 Renegade Way",
+                  phone: "(08) 6157 5650",
+                  latitude: "-31.81975",
+                  longitude: "115.805778",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-21:00, Sat: 06:00-20:00, Sun: 07:00-21:00",
+                },
+                {
+                  title: "159.5: Vibe Beechboro",
+                  description:
+                    "Address: 495 Beechboro Rd N, BEECHBORO, Site features:  ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Workshop, Open 24 hours",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "159.5",
+                  "trading-name": "Vibe Beechboro",
+                  location: "BEECHBORO",
+                  address: "495 Beechboro Rd N",
+                  phone: null,
+                  latitude: "-31.869",
+                  longitude: "115.924439",
+                  "site-features":
+                    " ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Workshop, Open 24 hours",
+                },
+                {
+                  title: "159.5: Better Choice Edgewater",
+                  description:
+                    "Address: 21 Edgewater Dr, EDGEWATER, Phone: (08) 9306 3826, Open Mon-Fri: 07:00-19:00, Sat: 07:00-19:00, Sun: 07:00-19:00",
+                  brand: "Better Choice",
+                  date: "2021-12-22",
+                  price: "159.5",
+                  "trading-name": "Better Choice Edgewater",
+                  location: "EDGEWATER",
+                  address: "21 Edgewater Dr",
+                  phone: "(08) 9306 3826",
+                  latitude: "-31.772036",
+                  longitude: "115.789182",
+                  "site-features":
+                    ", Open Mon-Fri: 07:00-19:00, Sat: 07:00-19:00, Sun: 07:00-19:00",
+                },
+                {
+                  title: "159.5: United Ellenbrook",
+                  description:
+                    "Address: 3 Locke Lane, ELLENBROOK, Phone: (08) 6336 7752, Site features:  ATM Air Bottled Gas EFTPOS Ice Toilets Trailer Hire Water, Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "159.5",
+                  "trading-name": "United Ellenbrook",
+                  location: "ELLENBROOK",
+                  address: "3 Locke Lane",
+                  phone: "(08) 6336 7752",
+                  latitude: "-31.77852",
+                  longitude: "115.96699",
+                  "site-features":
+                    " ATM Air Bottled Gas EFTPOS Ice Toilets Trailer Hire Water, Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                },
+                {
+                  title: "159.5: Puma Mount Lawley",
+                  description:
+                    "Address: 81 Guildford Rd, MOUNT LAWLEY, Phone: (08) 9272 6833, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.5",
+                  "trading-name": "Puma Mount Lawley",
+                  location: "MOUNT LAWLEY",
+                  address: "81 Guildford Rd",
+                  phone: "(08) 9272 6833",
+                  latitude: "-31.934473",
+                  longitude: "115.884014",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "159.5: Vibe Charles St",
+                  description:
+                    "Address: 427 Charles St, NORTH PERTH, Phone: (08) 9242 2379, Open Mon-Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-19:00",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "159.5",
+                  "trading-name": "Vibe Charles St",
+                  location: "NORTH PERTH",
+                  address: "427 Charles St",
+                  phone: "(08) 9242 2379",
+                  latitude: "-31.922312",
+                  longitude: "115.850264",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-19:00",
+                },
+                {
+                  title: "159.5: Vibe Subiaco",
+                  description:
+                    "Address: 123 Thomas St, SUBIACO, Phone: (08) 9382 2281, Open Mon-Fri: 06:30-21:00, Sat: 07:30-17:00, Sun: 07:30-17:00",
+                  brand: "Vibe",
+                  date: "2021-12-22",
+                  price: "159.5",
+                  "trading-name": "Vibe Subiaco",
+                  location: "SUBIACO",
+                  address: "123 Thomas St",
+                  phone: "(08) 9382 2281",
+                  latitude: "-31.952307",
+                  longitude: "115.83115",
+                  "site-features":
+                    ", Open Mon-Fri: 06:30-21:00, Sat: 07:30-17:00, Sun: 07:30-17:00",
+                },
+                {
+                  title: "159.7: Puma Balcatta",
+                  description:
+                    "Address: 229 Balcatta Rd, BALCATTA, Phone: (08) 6184 4908, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Balcatta",
+                  location: "BALCATTA",
+                  address: "229 Balcatta Rd",
+                  phone: "(08) 6184 4908",
+                  latitude: "-31.862537",
+                  longitude: "115.819152",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "159.7: BP Caversham",
+                  description:
+                    "Address: 40 Bennett St, CAVERSHAM, Phone: 0408 305 380, Open Mon-Fri: 05:00-21:50, Sat: 06:00-20:50, Sun: 06:00-20:50",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "BP Caversham",
+                  location: "CAVERSHAM",
+                  address: "40 Bennett St",
+                  phone: "0408 305 380",
+                  latitude: "-31.871966",
+                  longitude: "115.960195",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-21:50, Sat: 06:00-20:50, Sun: 06:00-20:50",
+                },
+                {
+                  title: "159.7: Puma Gwelup",
+                  description:
+                    "Address: 1 Wishart St, GWELUP, Phone: (08) 9204 2357, Site features: Conditional Driveway Service, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Gwelup",
+                  location: "GWELUP",
+                  address: "1 Wishart St",
+                  phone: "(08) 9204 2357",
+                  latitude: "-31.876337",
+                  longitude: "115.79678",
+                  "site-features":
+                    "Conditional Driveway Service, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "159.7: Puma Merriwa",
+                  description:
+                    "Address: 5/4 Hughie Edwards Dr, MERRIWA, Phone: (08) 9304 4955, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Merriwa",
+                  location: "MERRIWA",
+                  address: "5/4 Hughie Edwards Dr",
+                  phone: "(08) 9304 4955",
+                  latitude: "-31.659802",
+                  longitude: "115.706131",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "159.7: Puma Mindarie",
+                  description:
+                    "Address: 22 Anchorage Dr, MINDARIE, Phone: (08) 9407 7970, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Mindarie",
+                  location: "MINDARIE",
+                  address: "22 Anchorage Dr",
+                  phone: "(08) 9407 7970",
+                  latitude: "-31.693672",
+                  longitude: "115.713732",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "159.7: Puma Osborne Park",
+                  description:
+                    "Address: 8 Main St, OSBORNE PARK, Phone: (08) 9444 9952, Site features: Conditional Driveway Service, ATM Air Bottled Gas EFTPOS Fuel Cards Ice Toilets Water, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Osborne Park",
+                  location: "OSBORNE PARK",
+                  address: "8 Main St",
+                  phone: "(08) 9444 9952",
+                  latitude: "-31.913639",
+                  longitude: "115.828363",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled Gas EFTPOS Fuel Cards Ice Toilets Water, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "159.7: Puma Pearsall",
+                  description:
+                    "Address: 204 Shiraz Bvd, PEARSALL, Phone: 0491 852 785, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Pearsall",
+                  location: "PEARSALL",
+                  address: "204 Shiraz Bvd",
+                  phone: "0491 852 785",
+                  latitude: "-31.785754",
+                  longitude: "115.826174",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.7: Puma Wangara",
+                  description:
+                    "Address: 1 Brady St, WANGARA, Phone: (08) 9309 5848, Open Mon-Fri: 06:00-18:30, Sat: 06:30-14:00, Sun: 00:00-00:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Wangara",
+                  location: "WANGARA",
+                  address: "1 Brady St",
+                  phone: "(08) 9309 5848",
+                  latitude: "-31.786174",
+                  longitude: "115.819241",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-18:30, Sat: 06:30-14:00, Sun: 00:00-00:00",
+                },
+                {
+                  title: "159.7: Puma Wanneroo",
+                  description:
+                    "Address: 951 Wanneroo Rd, WANNEROO, Phone: (08) 9206 0495, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Wanneroo",
+                  location: "WANNEROO",
+                  address: "951 Wanneroo Rd",
+                  phone: "(08) 9206 0495",
+                  latitude: "-31.752615",
+                  longitude: "115.803432",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.7: Puma North Perth",
+                  description:
+                    "Address: 311 Fitzgerald St, WEST PERTH, Phone: (08) 9328 2280, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma North Perth",
+                  location: "WEST PERTH",
+                  address: "311 Fitzgerald St",
+                  phone: "(08) 9328 2280",
+                  latitude: "-31.936638",
+                  longitude: "115.85796",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "159.7: Puma Yanchep",
+                  description:
+                    "Address: 1 Ikara Lane, YANCHEP, Phone: (08) 9506 4337, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Yanchep",
+                  location: "YANCHEP",
+                  address: "1 Ikara Lane",
+                  phone: "(08) 9506 4337",
+                  latitude: "-31.547779",
+                  longitude: "115.641352",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "159.7: Puma Yokine",
+                  description:
+                    "Address: 398 Hector St, YOKINE, Phone: (08) 9443 9166, Site features: Conditional Driveway Service, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Puma",
+                  date: "2021-12-22",
+                  price: "159.7",
+                  "trading-name": "Puma Yokine",
+                  location: "YOKINE",
+                  address: "398 Hector St",
+                  phone: "(08) 9443 9166",
+                  latitude: "-31.904611",
+                  longitude: "115.849565",
+                  "site-features":
+                    "Conditional Driveway Service, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "159.9: 7-Eleven Stirling",
+                  description:
+                    "Address: 377 Wanneroo Rd, BALCATTA, Phone: 0456 473 570, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Stirling",
+                  location: "BALCATTA",
+                  address: "377 Wanneroo Rd",
+                  phone: "0456 473 570",
+                  latitude: "-31.8734",
+                  longitude: "115.828839",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Balcatta",
+                  description:
+                    "Address: 174 Balcatta Rd, BALCATTA, Phone: (08) 9240 2016, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Balcatta",
+                  location: "BALCATTA",
+                  address: "174 Balcatta Rd",
+                  phone: "(08) 9240 2016",
+                  latitude: "-31.860353",
+                  longitude: "115.80964",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Balga",
+                  description:
+                    "Address: 102 Princess Rd, BALGA, Phone: (08) 9349 3254, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Balga",
+                  location: "BALGA",
+                  address: "102 Princess Rd",
+                  phone: "(08) 9349 3254",
+                  latitude: "-31.856494",
+                  longitude: "115.83739",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Butler",
+                  description:
+                    "Address: 270 Butler Bvd, BUTLER, Phone: 0437 523 840, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Butler",
+                  location: "BUTLER",
+                  address: "270 Butler Bvd",
+                  phone: "0437 523 840",
+                  latitude: "-31.635358",
+                  longitude: "115.705554",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Caversham",
+                  description:
+                    "Address: 2131 West Swan Rd, CAVERSHAM, Phone: (08) 9250 1102, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Caversham",
+                  location: "CAVERSHAM",
+                  address: "2131 West Swan Rd",
+                  phone: "(08) 9250 1102",
+                  latitude: "-31.875469",
+                  longitude: "115.974566",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Clarkson",
+                  description:
+                    "Address: 28K Caloundra Rd, CLARKSON, Phone: 0429 131 650, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Clarkson",
+                  location: "CLARKSON",
+                  address: "28K Caloundra Rd",
+                  phone: "0429 131 650",
+                  latitude: "-31.693579",
+                  longitude: "115.724971",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Connect Currambine",
+                  description:
+                    "Address: 2 Sunlander Dr, CURRAMBINE, Phone: (08) 9305 3222, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Currambine",
+                  location: "CURRAMBINE",
+                  address: "2 Sunlander Dr",
+                  phone: "(08) 9305 3222",
+                  latitude: "-31.723736",
+                  longitude: "115.74642",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: Caltex Woolworths Dianella",
+                  description:
+                    "Address: 372 Grand Prom, DIANELLA, Phone: (08) 6186 0274, Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "Caltex Woolworths Dianella",
+                  location: "DIANELLA",
+                  address: "372 Grand Prom",
+                  phone: "(08) 6186 0274",
+                  latitude: "-31.89674",
+                  longitude: "115.871865",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                },
+                {
+                  title: "159.9: Coles Express Duncraig",
+                  description:
+                    "Address: 193 Warwick Rd, DUNCRAIG, Phone: (08) 6247 4396, Open Mon-Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 05:00-23:59",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "Coles Express Duncraig",
+                  location: "DUNCRAIG",
+                  address: "193 Warwick Rd",
+                  phone: "(08) 6247 4396",
+                  latitude: "-31.835583",
+                  longitude: "115.782828",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 05:00-23:59",
+                },
+                {
+                  title: "159.9: BP Connect East Perth",
+                  description:
+                    "Address: 68-70 Brown St, EAST PERTH, Phone: (08) 9421 1280, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect East Perth",
+                  location: "EAST PERTH",
+                  address: "68-70 Brown St",
+                  phone: "(08) 9421 1280",
+                  latitude: "-31.95077",
+                  longitude: "115.876572",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: Coles Express Ellenbrook",
+                  description:
+                    "Address: 3 Goodwood Cres, ELLENBROOK, Phone: (08) 6247 4312, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "Coles Express Ellenbrook",
+                  location: "ELLENBROOK",
+                  address: "3 Goodwood Cres",
+                  phone: "(08) 6247 4312",
+                  latitude: "-31.775",
+                  longitude: "115.96",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Ellenbrook",
+                  description:
+                    "Address: 180 The Promenade, ELLENBROOK, Phone: (08) 9277 4758, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Ellenbrook",
+                  location: "ELLENBROOK",
+                  address: "180 The Promenade",
+                  phone: "(08) 9277 4758",
+                  latitude: "-31.775436",
+                  longitude: "115.963073",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Malvern Springs",
+                  description:
+                    "Address: 324 The Broadway, ELLENBROOK, Phone: (08) 6296 9138, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Malvern Springs",
+                  location: "ELLENBROOK",
+                  address: "324 The Broadway",
+                  phone: "(08) 6296 9138",
+                  latitude: "-31.766075",
+                  longitude: "115.985544",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Embleton",
+                  description:
+                    "Address: 484 Walter Rd East, EMBLETON, Phone: 0436 416 540, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Embleton",
+                  location: "EMBLETON",
+                  address: "484 Walter Rd East",
+                  phone: "0436 416 540",
+                  latitude: "-31.8951",
+                  longitude: "115.923206",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Nookenburra",
+                  description:
+                    "Address: 386 Scarborough Beach Rd, INNALOO, Phone: (08) 9244 2322, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Nookenburra",
+                  location: "INNALOO",
+                  address: "386 Scarborough Beach Rd",
+                  phone: "(08) 9244 2322",
+                  latitude: "-31.902714",
+                  longitude: "115.799177",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Jindalee",
+                  description:
+                    "Address: 2 Abello Bvd, JINDALEE, Phone: 0499 949 822, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Jindalee",
+                  location: "JINDALEE",
+                  address: "2 Abello Bvd",
+                  phone: "0499 949 822",
+                  latitude: "-31.636611",
+                  longitude: "115.689599",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Connect Karrinyup",
+                  description:
+                    "Address: 190 Karrinyup Rd, KARRINYUP, Phone: (08) 9341 4999, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Karrinyup",
+                  location: "KARRINYUP",
+                  address: "190 Karrinyup Rd",
+                  phone: "(08) 9341 4999",
+                  latitude: "-31.876659",
+                  longitude: "115.77551",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Koondoola",
+                  description:
+                    "Address: 28 Koondoola Ave, KOONDOOLA, Phone: (08) 9342 4422, Site features: Conditional Driveway Service, ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open Mon-Fri: 06:00-20:50, Sat: 06:00-19:50, Sun: 06:00-19:50",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Koondoola",
+                  location: "KOONDOOLA",
+                  address: "28 Koondoola Ave",
+                  phone: "(08) 9342 4422",
+                  latitude: "-31.841924",
+                  longitude: "115.858276",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open Mon-Fri: 06:00-20:50, Sat: 06:00-19:50, Sun: 06:00-19:50",
+                },
+                {
+                  title: "159.9: 7-Eleven Landsdale",
+                  description:
+                    "Address: 8 Mullingar Way, LANDSDALE, Phone: (08) 9303 4431, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Landsdale",
+                  location: "LANDSDALE",
+                  address: "8 Mullingar Way",
+                  phone: "(08) 9303 4431",
+                  latitude: "-31.804934",
+                  longitude: "115.835741",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: United Lexia",
+                  description:
+                    "Address: 779 Gnangara Rd, LEXIA, Phone: (08) 6336 7753, Site features:  ATM Air Bottled Gas EFTPOS Fuel Cards Ice Pumped AdBlue Toilets Trailer Hire Truck Friendly Water, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "United Lexia",
+                  location: "LEXIA",
+                  address: "779 Gnangara Rd",
+                  phone: "(08) 6336 7753",
+                  latitude: "-31.795189",
+                  longitude: "115.899559",
+                  "site-features":
+                    " ATM Air Bottled Gas EFTPOS Fuel Cards Ice Pumped AdBlue Toilets Trailer Hire Truck Friendly Water, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "159.9: Coles Express Malaga",
+                  description:
+                    "Address: 492 Alexander Dr, MALAGA, Phone: (08) 6157 5644, Open Mon-Fri: 05:00-21:00, Sat: 05:00-21:00, Sun: 06:00-21:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "Coles Express Malaga",
+                  location: "MALAGA",
+                  address: "492 Alexander Dr",
+                  phone: "(08) 6157 5644",
+                  latitude: "-31.863512",
+                  longitude: "115.879279",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-21:00, Sat: 05:00-21:00, Sun: 06:00-21:00",
+                },
+                {
+                  title: "159.9: BP Connect Wellington Rd",
+                  description:
+                    "Address: 261 Walter Rd West, MORLEY, Phone: (08) 9375 3699, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Wellington Rd",
+                  location: "MORLEY",
+                  address: "261 Walter Rd West",
+                  phone: "(08) 9375 3699",
+                  latitude: "-31.894607",
+                  longitude: "115.896666",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: United Mt Lawley",
+                  description:
+                    "Address: 791 Beaufort St, MOUNT LAWLEY, Phone: (08) 6336 7750, Site features:  ATM Air Bottled Gas Carwash EFTPOS Fuel Cards Ice Water, Open Mon: 06:00-19:00, Tue: 06:00-19:00, Wed: 06:00-19:00, Thu: 06:00-19:00, Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 06:00-20:00",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "United Mt Lawley",
+                  location: "MOUNT LAWLEY",
+                  address: "791 Beaufort St",
+                  phone: "(08) 6336 7750",
+                  latitude: "-31.925836",
+                  longitude: "115.88017",
+                  "site-features":
+                    " ATM Air Bottled Gas Carwash EFTPOS Fuel Cards Ice Water, Open Mon: 06:00-19:00, Tue: 06:00-19:00, Wed: 06:00-19:00, Thu: 06:00-19:00, Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 06:00-20:00",
+                },
+                {
+                  title: "159.9: BP Rosegarden",
+                  description:
+                    "Address: 129 Stirling Hwy, NEDLANDS, Phone: (08) 9386 1014, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Rosegarden",
+                  location: "NEDLANDS",
+                  address: "129 Stirling Hwy",
+                  phone: "(08) 9386 1014",
+                  latitude: "-31.979719",
+                  longitude: "115.798235",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP 2go Noranda",
+                  description:
+                    "Address: 40 Benara Rd, NORANDA, Phone: (08) 9276 5353, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP 2go Noranda",
+                  location: "NORANDA",
+                  address: "40 Benara Rd",
+                  phone: "(08) 9276 5353",
+                  latitude: "-31.875859",
+                  longitude: "115.894223",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: Ampol Rous Head",
+                  description:
+                    "Address: Cnr North Mole Dr & Rous Head Rd, NORTH FREMANTLE, Phone: 1800 240 398, Site features: Unmanned Station, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "Ampol Rous Head",
+                  location: "NORTH FREMANTLE",
+                  address: "Cnr North Mole Dr & Rous Head Rd",
+                  phone: "1800 240 398",
+                  latitude: "-32.041146",
+                  longitude: "115.738844",
+                  "site-features": "Unmanned Station, Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Connect North Perth",
+                  description:
+                    "Address: 349 Charles St, NORTH PERTH, Phone: (08) 9443 4111, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect North Perth",
+                  location: "NORTH PERTH",
+                  address: "349 Charles St",
+                  phone: "(08) 9443 4111",
+                  latitude: "-31.926673",
+                  longitude: "115.851901",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: United Northbridge",
+                  description:
+                    "Address: 31 Fitzgerald St, NORTHBRIDGE, Phone: (08) 6336 7754, Site features:  ATM Air Bottled AdBlue Bottled Gas EFTPOS Fuel Cards Ice Water, Open Mon-Fri: 05:00-24:00, Sat: 05:00-24:00, Sun: 05:00-24:00",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "United Northbridge",
+                  location: "NORTHBRIDGE",
+                  address: "31 Fitzgerald St",
+                  phone: "(08) 6336 7754",
+                  latitude: "-31.945612",
+                  longitude: "115.852438",
+                  "site-features":
+                    " ATM Air Bottled AdBlue Bottled Gas EFTPOS Fuel Cards Ice Water, Open Mon-Fri: 05:00-24:00, Sat: 05:00-24:00, Sun: 05:00-24:00",
+                },
+                {
+                  title: "159.9: BP Connect Beaumauris",
+                  description:
+                    "Address: 2 Prendiville Ave, OCEAN REEF, Phone: (08) 9300 4905, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Beaumauris",
+                  location: "OCEAN REEF",
+                  address: "2 Prendiville Ave",
+                  phone: "(08) 9300 4905",
+                  latitude: "-31.752351",
+                  longitude: "115.74064",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: Caltex Woolworths Osborne Park",
+                  description:
+                    "Address: 401 Scarborough Beach Rd, OSBORNE PARK, Phone: (08) 6186 0433, Open Mon-Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 06:00-23:59",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "Caltex Woolworths Osborne Park",
+                  location: "OSBORNE PARK",
+                  address: "401 Scarborough Beach Rd",
+                  phone: "(08) 6186 0433",
+                  latitude: "-31.91058",
+                  longitude: "115.81401",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 06:00-23:59",
+                },
+                {
+                  title: "159.9: Coles Express Osborne Park",
+                  description:
+                    "Address: 11 Roberts St West, OSBORNE PARK, Phone: (08) 6157 5676, Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "Coles Express Osborne Park",
+                  location: "OSBORNE PARK",
+                  address: "11 Roberts St West",
+                  phone: "(08) 6157 5676",
+                  latitude: "-31.907535",
+                  longitude: "115.819092",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-22:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "159.9: BP Connect Main Street",
+                  description:
+                    "Address: 218 Main St, OSBORNE PARK, Phone: (08) 9349 2244, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Main Street",
+                  location: "OSBORNE PARK",
+                  address: "218 Main St",
+                  phone: "(08) 9349 2244",
+                  latitude: "-31.896277",
+                  longitude: "115.82855",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: United Osborne Park",
+                  description:
+                    "Address: 479 Scarborough Beach Rd, OSBORNE PARK, Phone: (08) 6336 7755",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "United Osborne Park",
+                  location: "OSBORNE PARK",
+                  address: "479 Scarborough Beach Rd",
+                  phone: "(08) 6336 7755",
+                  latitude: "-31.904837",
+                  longitude: "115.80609",
+                  "site-features": ", ",
+                },
+                {
+                  title: "159.9: United Hepburn Heights",
+                  description:
+                    "Address: 4 Walter Padbury Bvd, PADBURY, Phone: (08) 9307 2868",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "United Hepburn Heights",
+                  location: "PADBURY",
+                  address: "4 Walter Padbury Bvd",
+                  phone: "(08) 9307 2868",
+                  latitude: "-31.81889",
+                  longitude: "115.774096",
+                  "site-features": ", ",
+                },
+                {
+                  title: "159.9: BP Connect Padbury",
+                  description:
+                    "Address: 2 Warburton Ave, PADBURY, Phone: (08) 9401 6644, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Padbury",
+                  location: "PADBURY",
+                  address: "2 Warburton Ave",
+                  phone: "(08) 9401 6644",
+                  latitude: "-31.813708",
+                  longitude: "115.75932",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Highgate",
+                  description:
+                    "Address: 342 Beaufort St, PERTH, Phone: 0450 744 094, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Highgate",
+                  location: "PERTH",
+                  address: "342 Beaufort St",
+                  phone: "0450 744 094",
+                  latitude: "-31.942556",
+                  longitude: "115.867359",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Connect Merriwa",
+                  description:
+                    "Address: 2 Ridgewood Bvd, RIDGEWOOD, Phone: (08) 9305 8531, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Merriwa",
+                  location: "RIDGEWOOD",
+                  address: "2 Ridgewood Bvd",
+                  phone: "(08) 9305 8531",
+                  latitude: "-31.670127",
+                  longitude: "115.726195",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Connect West Coast",
+                  description:
+                    "Address: 11 Scarborough Beach Rd, SCARBOROUGH, Phone: (08) 9245 3366, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect West Coast",
+                  location: "SCARBOROUGH",
+                  address: "11 Scarborough Beach Rd",
+                  phone: "(08) 9245 3366",
+                  latitude: "-31.894578",
+                  longitude: "115.757975",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Sorrento",
+                  description:
+                    "Address: 128 West Coast Dr, SORRENTO, Phone: (08) 9448 1424, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Sorrento",
+                  location: "SORRENTO",
+                  address: "128 West Coast Dr",
+                  phone: "(08) 9448 1424",
+                  latitude: "-31.832414",
+                  longitude: "115.74792",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Wangara",
+                  description:
+                    "Address: 79 Gnangara Rd, WANGARA, Phone: (08) 9409 6401, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Wangara",
+                  location: "WANGARA",
+                  address: "79 Gnangara Rd",
+                  phone: "(08) 9409 6401",
+                  latitude: "-31.801955",
+                  longitude: "115.827751",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Wanneroo South",
+                  description:
+                    "Address: 929-931 Wanneroo Rd, WANNEROO, Phone: (08) 9405 2474, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Wanneroo South",
+                  location: "WANNEROO",
+                  address: "929-931 Wanneroo Rd",
+                  phone: "(08) 9405 2474",
+                  latitude: "-31.754313",
+                  longitude: "115.804474",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: 7-Eleven Wanneroo",
+                  description:
+                    "Address: 990 Wanneroo Rd, WANNEROO, Phone: (08) 9306 2759, Open 24 hours",
+                  brand: "7-Eleven",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "7-Eleven Wanneroo",
+                  location: "WANNEROO",
+                  address: "990 Wanneroo Rd",
+                  phone: "(08) 9306 2759",
+                  latitude: "-31.748986",
+                  longitude: "115.801954",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Connect Wembley",
+                  description:
+                    "Address: 240 Cambridge St, WEMBLEY, Phone: (08) 9381 1000, Site features: Conditional Driveway Service, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Connect Wembley",
+                  location: "WEMBLEY",
+                  address: "240 Cambridge St",
+                  phone: "(08) 9381 1000",
+                  latitude: "-31.940547",
+                  longitude: "115.820095",
+                  "site-features": "Conditional Driveway Service, Open 24 hours",
+                },
+                {
+                  title: "159.9: BP Dog Swamp",
+                  description:
+                    "Address: 4 Wanneroo Rd, YOKINE, Phone: (08) 9444 6990, Site features: Conditional Driveway Service",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "159.9",
+                  "trading-name": "BP Dog Swamp",
+                  location: "YOKINE",
+                  address: "4 Wanneroo Rd",
+                  phone: "(08) 9444 6990",
+                  latitude: "-31.911261",
+                  longitude: "115.846928",
+                  "site-features": "Conditional Driveway Service, ",
+                },
+                {
+                  title: "160.9: Caltex Woolworths Alkimos",
+                  description:
+                    "Address: 11 Shorehaven Bvd, ALKIMOS, Phone: (08) 9746 0953, Open Mon-Fri: 05:00-23:00, Sat: 05:00-23:00, Sun: 05:00-23:00",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Caltex Woolworths Alkimos",
+                  location: "ALKIMOS",
+                  address: "11 Shorehaven Bvd",
+                  phone: "(08) 9746 0953",
+                  latitude: "-31.601902",
+                  longitude: "115.680898",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-23:00, Sat: 05:00-23:00, Sun: 05:00-23:00",
+                },
+                {
+                  title: "160.9: Ampol Foodary Ashby",
+                  description:
+                    "Address: 2 Hollosy Way, ASHBY, Phone: (08) 9206 2286, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Ashby",
+                  location: "ASHBY",
+                  address: "2 Hollosy Way",
+                  phone: "(08) 9206 2286",
+                  latitude: "-31.73256",
+                  longitude: "115.80416",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Caltex Woolworths Aveley",
+                  description:
+                    "Address: 317 Millhouse Rd, AVELEY, Phone: (08) 6186 0422, Open Mon-Fri: 05:00-23:00, Sat: 05:00-23:00, Sun: 05:00-23:00",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Caltex Woolworths Aveley",
+                  location: "AVELEY",
+                  address: "317 Millhouse Rd",
+                  phone: "(08) 6186 0422",
+                  latitude: "-31.777467",
+                  longitude: "115.987368",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-23:00, Sat: 05:00-23:00, Sun: 05:00-23:00",
+                },
+                {
+                  title: "160.9: Caltex Woolworths Ballajura",
+                  description:
+                    "Address: 5 Hamelin Dr, BALLAJURA, Phone: (08) 6186 0312, Open Mon-Fri: 06:00-20:00, Sat: 08:00-19:00, Sun: 08:00-19:00",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Caltex Woolworths Ballajura",
+                  location: "BALLAJURA",
+                  address: "5 Hamelin Dr",
+                  phone: "(08) 6186 0312",
+                  latitude: "-31.847444",
+                  longitude: "115.906385",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-20:00, Sat: 08:00-19:00, Sun: 08:00-19:00",
+                },
+                {
+                  title: "160.9: Ampol Foodary Altone Road",
+                  description:
+                    "Address: 159 Altone Rd, BEECHBORO, Phone: (08) 9378 2229, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Altone Road",
+                  location: "BEECHBORO",
+                  address: "159 Altone Rd",
+                  phone: "(08) 9378 2229",
+                  latitude: "-31.871201",
+                  longitude: "115.945179",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Butler",
+                  description:
+                    "Address: 11 Headingly Cr, BUTLER, Phone: (08) 9562 4905, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Butler",
+                  location: "BUTLER",
+                  address: "11 Headingly Cr",
+                  phone: "(08) 9562 4905",
+                  latitude: "-31.65413",
+                  longitude: "115.71258",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Carine",
+                  description:
+                    "Address: 510 Beach Rd, CARINE, Phone: (08) 9243 0206, Open Mon-Fri: 06:00-23:00, Sat: 06:00-23:00, Sun: 06:00-23:00",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Carine",
+                  location: "CARINE",
+                  address: "510 Beach Rd",
+                  phone: "(08) 9243 0206",
+                  latitude: "-31.846312",
+                  longitude: "115.795363",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-23:00, Sat: 06:00-23:00, Sun: 06:00-23:00",
+                },
+                {
+                  title: "160.9: Coles Express Claremont",
+                  description:
+                    "Address: 269 Stirling Hwy, CLAREMONT, Phone: (08) 6247 4366, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Coles Express Claremont",
+                  location: "CLAREMONT",
+                  address: "269 Stirling Hwy",
+                  phone: "(08) 6247 4366",
+                  latitude: "-31.982195",
+                  longitude: "115.78389",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Clarkson",
+                  description:
+                    "Address: 7 Ocean Keys Bvd, CLARKSON, Phone: (08) 9407 8122, Open Mon-Fri: 04:30-23:59, Sat: 04:30-23:59, Sun: 04:30-23:59",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Clarkson",
+                  location: "CLARKSON",
+                  address: "7 Ocean Keys Bvd",
+                  phone: "(08) 9407 8122",
+                  latitude: "-31.689369",
+                  longitude: "115.715226",
+                  "site-features":
+                    ", Open Mon-Fri: 04:30-23:59, Sat: 04:30-23:59, Sun: 04:30-23:59",
+                },
+                {
+                  title: "160.9: Caltex Woolworths Currambine Marketplace",
+                  description:
+                    "Address: 1244 Marmion Ave, CURRAMBINE, Phone: (08) 6186 0378, Open Mon: 05:00-21:00, Tue: 05:00-21:00, Wed: 06:00-21:00, Thu: 06:00-21:00, Fri: 06:00-21:00, Sat: 07:00-21:00, Sun: 07:00-21:00",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Caltex Woolworths Currambine Marketplace",
+                  location: "CURRAMBINE",
+                  address: "1244 Marmion Ave",
+                  phone: "(08) 6186 0378",
+                  latitude: "-31.742211",
+                  longitude: "115.740365",
+                  "site-features":
+                    ", Open Mon: 05:00-21:00, Tue: 05:00-21:00, Wed: 06:00-21:00, Thu: 06:00-21:00, Fri: 06:00-21:00, Sat: 07:00-21:00, Sun: 07:00-21:00",
+                },
+                {
+                  title: "160.9: Ampol Foodary Doubleview",
+                  description:
+                    "Address: 365 Scarborough Beach Rd, DOUBLEVIEW, Phone: (08) 9204 1243, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Doubleview",
+                  location: "DOUBLEVIEW",
+                  address: "365 Scarborough Beach Rd",
+                  phone: "(08) 9204 1243",
+                  latitude: "-31.901328",
+                  longitude: "115.794203",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Caltex Woolworths Floreat",
+                  description:
+                    "Address: 5 Howtree Pl, FLOREAT, Phone: (08) 6186 0178, Open Mon: 06:00-22:00, Tue: 06:00-22:00, Wed: 06:00-21:00, Thu: 06:00-21:00, Fri: 06:00-21:00, Sat: 07:00-20:00, Sun: 07:00-19:00",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Caltex Woolworths Floreat",
+                  location: "FLOREAT",
+                  address: "5 Howtree Pl",
+                  phone: "(08) 6186 0178",
+                  latitude: "-31.93672",
+                  longitude: "115.793911",
+                  "site-features":
+                    ", Open Mon: 06:00-22:00, Tue: 06:00-22:00, Wed: 06:00-21:00, Thu: 06:00-21:00, Fri: 06:00-21:00, Sat: 07:00-20:00, Sun: 07:00-19:00",
+                },
+                {
+                  title: "160.9: Ampol Foodary Glendalough",
+                  description:
+                    "Address: 2 Jon Sanders Dr, GLENDALOUGH, Phone: (08) 9444 3802, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Glendalough",
+                  location: "GLENDALOUGH",
+                  address: "2 Jon Sanders Dr",
+                  phone: "(08) 9444 3802",
+                  latitude: "-31.922426",
+                  longitude: "115.819754",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Karrinyup",
+                  description:
+                    "Address: 490 Karrinyup Rd, GWELUP, Phone: (08) 9446 2488, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Karrinyup",
+                  location: "GWELUP",
+                  address: "490 Karrinyup Rd",
+                  phone: "(08) 9446 2488",
+                  latitude: "-31.882078",
+                  longitude: "115.796245",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Caltex Woolworths Joondalup Winton Road",
+                  description:
+                    "Address: 189 Winton Rd, JOONDALUP, Phone: (08) 6186 0332, Open Mon: 05:00-23:59, Tue: 05:00-23:59, Wed: 05:00-23:00, Thu: 05:00-23:00, Fri: 05:00-23:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Caltex Woolworths Joondalup Winton Road",
+                  location: "JOONDALUP",
+                  address: "189 Winton Rd",
+                  phone: "(08) 6186 0332",
+                  latitude: "-31.74449",
+                  longitude: "115.763128",
+                  "site-features":
+                    ", Open Mon: 05:00-23:59, Tue: 05:00-23:59, Wed: 05:00-23:00, Thu: 05:00-23:00, Fri: 05:00-23:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                },
+                {
+                  title: "160.9: Ampol Foodary Joondalup",
+                  description:
+                    "Address: 420 Joondalup Dr, JOONDALUP, Phone: (08) 9300 9797, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Joondalup",
+                  location: "JOONDALUP",
+                  address: "420 Joondalup Dr",
+                  phone: "(08) 9300 9797",
+                  latitude: "-31.741328",
+                  longitude: "115.764003",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Kingsley",
+                  description:
+                    "Address: 86 Kingsley Dr, KINGSLEY, Phone: (08) 9409 6294, Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Kingsley",
+                  location: "KINGSLEY",
+                  address: "86 Kingsley Dr",
+                  phone: "(08) 9409 6294",
+                  latitude: "-31.807038",
+                  longitude: "115.788723",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                },
+                {
+                  title: "160.9: Ampol Foodary Leederville",
+                  description:
+                    "Address: 319 Vincent St, LEEDERVILLE, Phone: (08) 9242 3978, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Leederville",
+                  location: "LEEDERVILLE",
+                  address: "319 Vincent St",
+                  phone: "(08) 9242 3978",
+                  latitude: "-31.936816",
+                  longitude: "115.840025",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Malaga",
+                  description:
+                    "Address: 1 Capital Rd, MALAGA, Phone: (08) 9249 9102, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Malaga",
+                  location: "MALAGA",
+                  address: "1 Capital Rd",
+                  phone: "(08) 9249 9102",
+                  latitude: "-31.848235",
+                  longitude: "115.878484",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Malaga Drive",
+                  description:
+                    "Address: 76 Malaga Dr, MALAGA, Phone: (08) 9209 1729, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Malaga Drive",
+                  location: "MALAGA",
+                  address: "76 Malaga Dr",
+                  phone: "(08) 9209 1729",
+                  latitude: "-31.863189",
+                  longitude: "115.893921",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Morley",
+                  description:
+                    "Address: 296 Benara Rd, MORLEY, Phone: (08) 9378 3478, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Morley",
+                  location: "MORLEY",
+                  address: "296 Benara Rd",
+                  phone: "(08) 9378 3478",
+                  latitude: "-31.876015",
+                  longitude: "115.92532",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Caltex Woolworths Morley Galleria",
+                  description:
+                    "Address: 60 Russell St, MORLEY, Phone: (08) 6186 0418, Open 24 hours",
+                  brand: "Caltex Woolworths",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Caltex Woolworths Morley Galleria",
+                  location: "MORLEY",
+                  address: "60 Russell St",
+                  phone: "(08) 6186 0418",
+                  latitude: "-31.896262",
+                  longitude: "115.895092",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Mosman Park",
+                  description:
+                    "Address: 676 Stirling Hwy, MOSMAN PARK, Phone: (08) 9284 7639, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Mosman Park",
+                  location: "MOSMAN PARK",
+                  address: "676 Stirling Hwy",
+                  phone: "(08) 9284 7639",
+                  latitude: "-32.011969",
+                  longitude: "115.755567",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Coles Express Mosman Park",
+                  description:
+                    "Address: 582 Stirling Hwy, MOSMAN PARK, Phone: (08) 6247 4382, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Coles Express Mosman Park",
+                  location: "MOSMAN PARK",
+                  address: "582 Stirling Hwy",
+                  phone: "(08) 6247 4382",
+                  latitude: "-32.005184",
+                  longitude: "115.759304",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Mt Lawley",
+                  description:
+                    "Address: 810 Beaufort St, MOUNT LAWLEY, Phone: (08) 9271 3011, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Mt Lawley",
+                  location: "MOUNT LAWLEY",
+                  address: "810 Beaufort St",
+                  phone: "(08) 9271 3011",
+                  latitude: "-31.925179",
+                  longitude: "115.881917",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Nedlands",
+                  description:
+                    "Address: 7 Broadway, NEDLANDS, Phone: (08) 6389 1898, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Nedlands",
+                  location: "NEDLANDS",
+                  address: "7 Broadway",
+                  phone: "(08) 6389 1898",
+                  latitude: "-31.97762",
+                  longitude: "115.813656",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary North Wanneroo",
+                  description:
+                    "Address: 2624 Wanneroo Rd, NOWERGUP, Phone: (08) 9407 5309, Open Mon-Fri: 05:00-21:00, Sat: 05:00-21:00, Sun: 05:00-21:00",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary North Wanneroo",
+                  location: "NOWERGUP",
+                  address: "2624 Wanneroo Rd",
+                  phone: "(08) 9407 5309",
+                  latitude: "-31.625661",
+                  longitude: "115.718259",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-21:00, Sat: 05:00-21:00, Sun: 05:00-21:00",
+                },
+                {
+                  title: "160.9: Ampol Foodary East Perth",
+                  description:
+                    "Address: 157 Lord St, PERTH, Phone: (08) 9227 0184, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary East Perth",
+                  location: "PERTH",
+                  address: "157 Lord St",
+                  phone: "(08) 9227 0184",
+                  latitude: "-31.948689",
+                  longitude: "115.869567",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Scarborough",
+                  description:
+                    "Address: 74 Scarborough Beach Rd, SCARBOROUGH, Phone: (08) 9245 7914, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Scarborough",
+                  location: "SCARBOROUGH",
+                  address: "74 Scarborough Beach Rd",
+                  phone: "(08) 9245 7914",
+                  latitude: "-31.893826",
+                  longitude: "115.764402",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Subiaco",
+                  description:
+                    "Address: 194 Rokeby Rd, SUBIACO, Phone: (08) 9388 1701, Open Mon-Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 05:00-23:59",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Subiaco",
+                  location: "SUBIACO",
+                  address: "194 Rokeby Rd",
+                  phone: "(08) 9388 1701",
+                  latitude: "-31.950616",
+                  longitude: "115.824234",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-23:59, Sat: 05:00-23:59, Sun: 05:00-23:59",
+                },
+                {
+                  title: "160.9: Ampol Foodary Wangara",
+                  description:
+                    "Address: 79 Buckingham Dr, WANGARA, Phone: (08) 9302 1363, Open Mon-Fri: 05:00-20:00, Sat: 05:00-20:00, Sun: 05:00-20:00",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Wangara",
+                  location: "WANGARA",
+                  address: "79 Buckingham Dr",
+                  phone: "(08) 9302 1363",
+                  latitude: "-31.787725",
+                  longitude: "115.828285",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-20:00, Sat: 05:00-20:00, Sun: 05:00-20:00",
+                },
+                {
+                  title: "160.9: United Tapping",
+                  description:
+                    "Address: 1369 Wanneroo Rd, WANNEROO, Site features:  ATM Air Bottled Gas Discount Voucher EFTPOS Ice Pumped AdBlue Truck Friendly Water",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "United Tapping",
+                  location: "WANNEROO",
+                  address: "1369 Wanneroo Rd",
+                  phone: null,
+                  latitude: "-31.719744",
+                  longitude: "115.783408",
+                  "site-features":
+                    " ATM Air Bottled Gas Discount Voucher EFTPOS Ice Pumped AdBlue Truck Friendly Water, ",
+                },
+                {
+                  title: "160.9: Coles Express Wembley",
+                  description:
+                    "Address: 337 Cambridge St, WEMBLEY, Phone: (08) 6247 4384, Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Coles Express Wembley",
+                  location: "WEMBLEY",
+                  address: "337 Cambridge St",
+                  phone: "(08) 6247 4384",
+                  latitude: "-31.941023",
+                  longitude: "115.811858",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-22:00, Sat: 06:00-22:00, Sun: 06:00-22:00",
+                },
+                {
+                  title: "160.9: Coles Express West Perth",
+                  description:
+                    "Address: 30 Thomas St, WEST PERTH, Phone: (08) 6247 4372, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Coles Express West Perth",
+                  location: "WEST PERTH",
+                  address: "30 Thomas St",
+                  phone: "(08) 6247 4372",
+                  latitude: "-31.945494",
+                  longitude: "115.839719",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "160.9: Ampol Foodary Yanchep",
+                  description:
+                    "Address: 1 Morwell St, YANCHEP, Phone: (08) 9554 1265, Open 24 hours",
+                  brand: "Ampol",
+                  date: "2021-12-22",
+                  price: "160.9",
+                  "trading-name": "Ampol Foodary Yanchep",
+                  location: "YANCHEP",
+                  address: "1 Morwell St",
+                  phone: "(08) 9554 1265",
+                  latitude: "-31.552063",
+                  longitude: "115.639632",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "161.9: Coles Express Butler",
+                  description:
+                    "Address: 61 Butler Bvd, BUTLER, Phone: (08) 6157 5666, Open Mon-Fri: 05:00-21:00, Sat: 06:00-21:00, Sun: 06:00-21:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Butler",
+                  location: "BUTLER",
+                  address: "61 Butler Bvd",
+                  phone: "(08) 6157 5666",
+                  latitude: "-31.638264",
+                  longitude: "115.69551",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-21:00, Sat: 06:00-21:00, Sun: 06:00-21:00",
+                },
+                {
+                  title: "161.9: Coles Express Clarkson",
+                  description:
+                    "Address: 36 Ocean Keys Bvd, CLARKSON, Phone: (08) 6157 5662, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Clarkson",
+                  location: "CLARKSON",
+                  address: "36 Ocean Keys Bvd",
+                  phone: "(08) 6157 5662",
+                  latitude: "-31.691894",
+                  longitude: "115.716118",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "161.9: BP Edgewater",
+                  description:
+                    "Address: 2 The Gateway, EDGEWATER, Phone: (08) 9300 9224, Site features:  ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "BP Edgewater",
+                  location: "EDGEWATER",
+                  address: "2 The Gateway",
+                  phone: "(08) 9300 9224",
+                  latitude: "-31.763449",
+                  longitude: "115.773396",
+                  "site-features":
+                    " ATM Air Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, ",
+                },
+                {
+                  title: "161.9: Coles Express Edgewater",
+                  description:
+                    "Address: 57 Joondalup Dr, EDGEWATER, Phone: (08) 6157 5638, Open Mon-Fri: 05:00-20:00, Sat: 06:00-20:00, Sun: 07:00-20:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Edgewater",
+                  location: "EDGEWATER",
+                  address: "57 Joondalup Dr",
+                  phone: "(08) 6157 5638",
+                  latitude: "-31.769548",
+                  longitude: "115.778804",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-20:00, Sat: 06:00-20:00, Sun: 07:00-20:00",
+                },
+                {
+                  title: "161.9: Coles Express Mount Lawley",
+                  description:
+                    "Address: 253 Walcott St, NORTH PERTH, Phone: (08) 6247 4364, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Mount Lawley",
+                  location: "NORTH PERTH",
+                  address: "253 Walcott St",
+                  phone: "(08) 6247 4364",
+                  latitude: "-31.923821",
+                  longitude: "115.859281",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "161.9: Coles Express Perth",
+                  description:
+                    "Address: 480 William St, PERTH, Phone: (08) 6157 5658, Open Mon-Fri: 06:00-22:00, Sat: 06:00-23:00, Sun: 07:00-22:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Perth",
+                  location: "PERTH",
+                  address: "480 William St",
+                  phone: "(08) 6157 5658",
+                  latitude: "-31.940953",
+                  longitude: "115.863904",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-22:00, Sat: 06:00-23:00, Sun: 07:00-22:00",
+                },
+                {
+                  title: "161.9: Coles Express Scarborough",
+                  description:
+                    "Address: 205 West Coast Hwy, SCARBOROUGH, Phone: (08) 6157 5654, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Scarborough",
+                  location: "SCARBOROUGH",
+                  address: "205 West Coast Hwy",
+                  phone: "(08) 6157 5654",
+                  latitude: "-31.892841",
+                  longitude: "115.757287",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "161.9: Coles Express Wangara",
+                  description:
+                    "Address: 1 Niche Pde, WANGARA, Phone: (08) 6247 4362, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Wangara",
+                  location: "WANGARA",
+                  address: "1 Niche Pde",
+                  phone: "(08) 6247 4362",
+                  latitude: "-31.791963",
+                  longitude: "115.852478",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "161.9: Coles Express Wanneroo Pearsall",
+                  description:
+                    "Address: 621 Wanneroo Rd, WANNEROO, Phone: (08) 6247 4370, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Wanneroo Pearsall",
+                  location: "WANNEROO",
+                  address: "621 Wanneroo Rd",
+                  phone: "(08) 6247 4370",
+                  latitude: "-31.780031",
+                  longitude: "115.808184",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "161.9: Coles Express Warwick (WA)",
+                  description:
+                    "Address: 274 Erindale Rd, WARWICK, Phone: (08) 6247 4386, Open 24 hours",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "161.9",
+                  "trading-name": "Coles Express Warwick (WA)",
+                  location: "WARWICK",
+                  address: "274 Erindale Rd",
+                  phone: "(08) 6247 4386",
+                  latitude: "-31.844434",
+                  longitude: "115.812742",
+                  "site-features": ", Open 24 hours",
+                },
+                {
+                  title: "162.9: Coles Express Girrawheen",
+                  description:
+                    "Address: 60 Marangaroo Dr, GIRRAWHEEN, Phone: (08) 6247 4392, Open Mon-Fri: 05:00-23:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "162.9",
+                  "trading-name": "Coles Express Girrawheen",
+                  location: "GIRRAWHEEN",
+                  address: "60 Marangaroo Dr",
+                  phone: "(08) 6247 4392",
+                  latitude: "-31.834601",
+                  longitude: "115.828903",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-23:00, Sat: 05:00-22:00, Sun: 05:00-22:00",
+                },
+                {
+                  title: "162.9: Coles Express Jolimont",
+                  description:
+                    "Address: 6 Jersey St, JOLIMONT, Phone: (08) 6247 4374, Open Mon-Fri: 06:00-22:00, Sat: 06:00-21:00, Sun: 07:00-21:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "162.9",
+                  "trading-name": "Coles Express Jolimont",
+                  location: "JOLIMONT",
+                  address: "6 Jersey St",
+                  phone: "(08) 6247 4374",
+                  latitude: "-31.947273",
+                  longitude: "115.811941",
+                  "site-features":
+                    ", Open Mon-Fri: 06:00-22:00, Sat: 06:00-21:00, Sun: 07:00-21:00",
+                },
+                {
+                  title: "162.9: Coles Express Ocean Reef",
+                  description:
+                    "Address: 6 Marina Bvd, OCEAN REEF, Phone: (08) 6157 5652, Open Mon-Fri: 05:00-22:00, Sat: 06:00-21:00, Sun: 07:00-21:00",
+                  brand: "Coles Express",
+                  date: "2021-12-22",
+                  price: "162.9",
+                  "trading-name": "Coles Express Ocean Reef",
+                  location: "OCEAN REEF",
+                  address: "6 Marina Bvd",
+                  phone: "(08) 6157 5652",
+                  latitude: "-31.76744",
+                  longitude: "115.749421",
+                  "site-features":
+                    ", Open Mon-Fri: 05:00-22:00, Sat: 06:00-21:00, Sun: 07:00-21:00",
+                },
+                {
+                  title: "162.9: United Quinns Rocks",
+                  description:
+                    "Address: 121 Quinns Rd, QUINNS ROCKS, Phone: (08) 6336 7756",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "162.9",
+                  "trading-name": "United Quinns Rocks",
+                  location: "QUINNS ROCKS",
+                  address: "121 Quinns Rd",
+                  phone: "(08) 6336 7756",
+                  latitude: "-31.672657",
+                  longitude: "115.708282",
+                  "site-features": ", ",
+                },
+                {
+                  title: "163.9: BP Balcatta",
+                  description:
+                    "Address: 53 Erindale Rd, BALCATTA, Phone: (08) 9240 4110, Site features: Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Restaurant Toilets Truck Friendly Water, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "163.9",
+                  "trading-name": "BP Balcatta",
+                  location: "BALCATTA",
+                  address: "53 Erindale Rd",
+                  phone: "(08) 9240 4110",
+                  latitude: "-31.865568",
+                  longitude: "115.808055",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Restaurant Toilets Truck Friendly Water, Open 24 hours",
+                },
+                {
+                  title: "163.9: BP Beldon",
+                  description:
+                    "Address: 261 Eddystone Ave, BELDON, Phone: (08) 9307 7887, Site features: Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Restaurant Toilets Water, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "163.9",
+                  "trading-name": "BP Beldon",
+                  location: "BELDON",
+                  address: "261 Eddystone Ave",
+                  phone: "(08) 9307 7887",
+                  latitude: "-31.770792",
+                  longitude: "115.767224",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Restaurant Toilets Water, Open 24 hours",
+                },
+                {
+                  title: "163.9: BP Greenwood",
+                  description:
+                    "Address: 19 Coolibah Dr, GREENWOOD, Phone: (08) 9447 5876, Site features: Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open Mon: 06:00-20:00, Tue: 06:00-20:00, Wed: 06:00-20:00, Thu: 06:00-20:00, Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-20:00",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "163.9",
+                  "trading-name": "BP Greenwood",
+                  location: "GREENWOOD",
+                  address: "19 Coolibah Dr",
+                  phone: "(08) 9447 5876",
+                  latitude: "-31.832441",
+                  longitude: "115.802091",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open Mon: 06:00-20:00, Tue: 06:00-20:00, Wed: 06:00-20:00, Thu: 06:00-20:00, Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-20:00",
+                },
+                {
+                  title: "163.9: BP Henley Brook",
+                  description:
+                    "Address: 1520 Gnangara Rd, HENLEY BROOK, Phone: (08) 6296 5788, Site features: Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Carwash Discount Voucher EFTPOS Fuel Cards Ice Pumped AdBlue Restaurant Toilets Trailer Hire Truck Friendly Water, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "163.9",
+                  "trading-name": "BP Henley Brook",
+                  location: "HENLEY BROOK",
+                  address: "1520 Gnangara Rd",
+                  phone: "(08) 6296 5788",
+                  latitude: "-31.795951",
+                  longitude: "115.978636",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Carwash Discount Voucher EFTPOS Fuel Cards Ice Pumped AdBlue Restaurant Toilets Trailer Hire Truck Friendly Water, Open 24 hours",
+                },
+                {
+                  title: "163.9: BP Mindarie",
+                  description:
+                    "Address: 360 Anchorage Dr North, MINDARIE, Phone: (08) 9304 4867, Site features: Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Carwash Discount Voucher EFTPOS Fuel Cards Ice Restaurant Toilets Trailer Hire Truck Friendly Water, Open 24 hours",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "163.9",
+                  "trading-name": "BP Mindarie",
+                  location: "MINDARIE",
+                  address: "360 Anchorage Dr North",
+                  phone: "(08) 9304 4867",
+                  latitude: "-31.677064",
+                  longitude: "115.711197",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Carwash Discount Voucher EFTPOS Fuel Cards Ice Restaurant Toilets Trailer Hire Truck Friendly Water, Open 24 hours",
+                },
+                {
+                  title: "163.9: BP Mullaloo",
+                  description:
+                    "Address: 101 Dampier Av, MULLALOO, Phone: (08) 9401 9010, Site features: Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open Mon: 06:00-20:00, Tue: 06:00-20:00, Wed: 06:00-20:00, Thu: 06:00-20:00, Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-20:00",
+                  brand: "BP",
+                  date: "2021-12-22",
+                  price: "163.9",
+                  "trading-name": "BP Mullaloo",
+                  location: "MULLALOO",
+                  address: "101 Dampier Av",
+                  phone: "(08) 9401 9010",
+                  latitude: "-31.780051",
+                  longitude: "115.744053",
+                  "site-features":
+                    "Conditional Driveway Service, ATM Air Bottled AdBlue Bottled Gas Discount Voucher EFTPOS Fuel Cards Ice Toilets Trailer Hire Water, Open Mon: 06:00-20:00, Tue: 06:00-20:00, Wed: 06:00-20:00, Thu: 06:00-20:00, Fri: 06:00-20:00, Sat: 06:00-20:00, Sun: 07:00-20:00",
+                },
+                {
+                  title: "169.9: United Swanbourne",
+                  description:
+                    "Address: 2 Servetus St, SWANBOURNE, Phone: (08) 9384 2944, Site features: Conditional Driveway Service, Air Bottled Gas EFTPOS Ice Toilets Trailer Hire Workshop",
+                  brand: "United",
+                  date: "2021-12-22",
+                  price: "169.9",
+                  "trading-name": "United Swanbourne",
+                  location: "SWANBOURNE",
+                  address: "2 Servetus St",
+                  phone: "(08) 9384 2944",
+                  latitude: "-31.983608",
+                  longitude: "115.767278",
+                  "site-features":
+                    "Conditional Driveway Service, Air Bottled Gas EFTPOS Ice Toilets Trailer Hire Workshop, ",
+                },
+              ];
+              //Get distance and time
+              const output = document.querySelector("#output");
+              output.innerHTML =
+                "<div class='alert-info'>From: " +
+                document.getElementById("from").value +
+                ".<br />To: " +
+                document.getElementById("to").value +
+                ".<br /> Driving distance <i class='fas fa-road'></i> : " +
+                result.routes[0].legs[0].distance.text +
+                ".<br />Duration <i class='fas fa-hourglass-start'></i> : " +
+                result.routes[0].legs[0].duration.text +
+                ".</div>";
+        
+              var originalRoute = parseFloat(result.routes[0].legs[0].duration.text);
+              console.log("original route", originalRoute);
+              let polyline = result.routes[0].overview_polyline;
+        
+              const decodeString = google.maps.geometry.encoding.decodePath(polyline);
+        
+              point1 = decodeString[Math.floor(decodeString.length * 0.25)];
+              point2 = decodeString[Math.floor(decodeString.length * 0.25) * 2];
+              point3 = decodeString[Math.floor(decodeString.length * 0.25) * 3];
+        
+              var marker1 = new google.maps.Marker({
+                position: { lat: point1.lat(), lng: point1.lng() },
+                map: map,
+              });
+              var marker2 = new google.maps.Marker({
+                position: { lat: point2.lat(), lng: point2.lng() },
+                map: map,
+              });
+              var marker3 = new google.maps.Marker({
+                position: { lat: point3.lat(), lng: point3.lng() },
+                map: map,
+              });
+        
+              var marker1Request = {
+                location: { lat: marker1.position.lat(), lng: marker1.position.lng() },
+                radius: "1000",
+                type: ["gas_station"],
+              };
+              console.log(typeof marker1Request)
+        
+              new google.maps.places.PlacesService(map).nearbySearch(
+                marker1Request,
+                function (results, status) {
+                  if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                      new google.maps.Marker({
+                        position: {
+                          lat: results[i].geometry.location.lat(),
+                          lng: results[i].geometry.location.lng(),
+                        },
+                        map: map,
+                      });
+                    }
+                  }
+                }
+              );
+            console.log(typeof map)
+              var marker2Request = {
+                location: { lat: marker2.position.lat(), lng: marker2.position.lng() },
+                radius: "1000",
+                type: ["gas_station"],
+              };
+        
+              new google.maps.places.PlacesService(map).nearbySearch(
+                marker2Request,
+                function (results, status) {
+                  if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                      new google.maps.Marker({
+                        position: {
+                          lat: results[i].geometry.location.lat(),
+                          lng: results[i].geometry.location.lng(),
+                        },
+                        map: map,
+                      });
+                    }
+                  }
+                }
+              );
+        
+              var marker3Request = {
+                location: { lat: marker3.position.lat(), lng: marker3.position.lng() },
+                radius: "10000",
+                type: ["gas_station"],
+              };
+        
+              const matchedList = [];
+              const lessThan10 = [];
+              let route1;
+              let route2;
+              async function getMatchedList() {
+                await new google.maps.places.PlacesService(map).nearbySearch(
+                  marker3Request,
+                  function (results, status) {
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                      radiusSearchStations = ["apple"];
+                      for (var i = 0; i < results.length; i++) {
+                        radiusSearchStations.push({
+                          lat: results[i].geometry.location.lat(),
+                          lng: results[i].geometry.location.lng(),
+                        });
+                        console.log(results[i])
+                      }
+                      radiusSearchStations.forEach((element) => {
+                        let searchedStationLat = element.lat;
+                        stations.forEach((element2) => {
+                          let fuelWatchStationLat = parseFloat(element2.latitude);
+        
+                          let win = Math.max(searchedStationLat, fuelWatchStationLat);
+                          let loss = Math.min(searchedStationLat, fuelWatchStationLat);
+        
+                          let difference = win - loss;
+                          if (difference <= 0.00009) {
+                            matchedList.push({ station1: element, station2: element2 });
+                          }
+                        });
+                      });
+                      console.log(typeof matchedList)
+        
+                      matchedList.forEach((station) => {
+                        console.log(matchedList, station);
+                        var req1 = {
+                          origin: document.getElementById("from").value,
+                          destination: {
+                            lat: parseFloat(station.station2.latitude),
+                            lng: parseFloat(station.station2.longitude),
+                          },
+                          travelMode: google.maps.TravelMode.DRIVING, //WALKING, BYCYCLING, TRANSIT
+                          unitSystem: google.maps.UnitSystem.IMPERIAL,
+                        };
+        
+                        //pass the request to the route method
+        
+                        async function compareRoutes() {
+                          await directionsService.route(
+                            req1,
+                            function (result, status) {
+                              if (status == google.maps.DirectionsStatus.OK) {
+                                route1 = parseFloat(
+                                  result.routes[0].legs[0].duration.text
+                                );
+                              }
+                            }
+                          );
+                        }
+                        compareRoutes();
+                        console.log(typeof compareRoutes)
+        
+                        var req2 = {
+                          origin: {
+                            lat: parseFloat(station.station2.latitude),
+                            lng: parseFloat(station.station2.longitude),
+                          },
+                          destination: document.getElementById("to").value,
+                          travelMode: google.maps.TravelMode.DRIVING, //WALKING, BYCYCLING, TRANSIT
+                          unitSystem: google.maps.UnitSystem.IMPERIAL,
+                        };
+        
+                        //pass the request to the route method
+        
+                        async function compareRoutes2() {
+                          await directionsService.route(
+                            req2,
+                            function (result, status) {
+                              if (status == google.maps.DirectionsStatus.OK) {
+                                route2 = parseFloat(
+                                  result.routes[0].legs[0].duration.text
+                                );
+                              }
+                            }
+                          );
+        
+                          newRoute = route1 + route2;
+                          console.log(
+                            newRoute,
+                            "<new",
+                            originalRoute,
+                            "<orig",
+                            route1,
+                            "<route1",
+                            route2,
+                            "route2"
+                          );
+                          if (newRoute - originalRoute < 11) {
+                            lessThan10.push(station);
+                          }
+                          let cheapestLessThan10 = 10000;
+                          lessThan10.forEach((lessThan10Station) => {
+                            if (
+                              parseFloat(lessThan10Station.station2.price) <
+                              cheapestLessThan10
+                            ) {
+                              cheapestLessThan10 = lessThan10Station.station2;
+                            }
+                          });
+                          console.log(
+                            "winner winner chicken dinner",
+                            cheapestLessThan10
+                          );
+                          
+                          const encodedStart = result.routes[0].legs[0].start_location.lat() + "%2C" + result.routes[0].legs[0].start_location.lng()
+                          const encodedStation = cheapestLessThan10.latitude + "%2C" + cheapestLessThan10.longitude
+                          const encodedEnd = result.routes[0].legs[0].end_location.lat() + "%2C" + result.routes[0].legs[0].end_location.lng()
+
+                         
+
+                          
+                          const url = `https://www.google.com/maps/dir/?api=1&origin=${encodedStart}&waypoints=${encodedStation}&destination=${encodedEnd}&travelmode=driving`
+
+
+                          console.log(url)
+
+                          document.querySelector("#output").innerHTML =
+                            "<div class='alert-info'> ULP 91: " +
+                            cheapestLessThan10.title +
+                            ".<br />Description: " +
+                            cheapestLessThan10.description + "<a href=" + url + ">" + url + "</a>"
+                            ".</div>";
+        
+                          console.log("less than 10", lessThan10);
+                        }
+                        compareRoutes2();
+                      });
+                    }
+        
+                    console.log("matchedlist", matchedList[0]);
+                    console.log("fun");
+        
+                    //display route
+                    directionsDisplay.setDirections(result);
+                  }
+                );
+              }
+              getMatchedList();
+            } else {
+              //delete route from map
+              directionsDisplay.setDirections({ routes: [] });
+              //center map in London
+              map.setCenter(myLatLng);
+        
+              //show error message
+              output.innerHTML =
+                "<div class='alert-danger'><i class='fas fa-exclamation-triangle'></i> Could not retrieve driving distance.</div>";
+            }
+          });
+        }
+        
+        var options = {
+          componentRestrictions: { country: "aus" },
+        };
+        
+        var input1 = document.getElementById("from");
+        var autocomplete1 = new google.maps.places.Autocomplete(input1, options);
+        
+        var input2 = document.getElementById("to");
+        var autocomplete2 = new google.maps.places.Autocomplete(input2, options);
+        </script>
+</body>
+</html>
