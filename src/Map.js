@@ -25,18 +25,6 @@ const Map = (props) => {
     }
   };
 
-  const getOrigin = (ref) => {
-    origin = ref;
-  };
-
-  const getDestination = (ref) => {
-    destination = ref;
-  };
-
-  const onClick = () => {
-    if (origin.value !== "" && destination.value !== "") {
-    }
-  };
   const mapContainerStyle = {
     height: "400px",
     width: "100%",
@@ -59,9 +47,6 @@ const Map = (props) => {
 
   return (
     <div>
-      <button className="btn btn-primary" type="button" onClick={onClick}>
-        Build Route
-      </button>
       <GoogleMap
         // required
         id="direction-example"

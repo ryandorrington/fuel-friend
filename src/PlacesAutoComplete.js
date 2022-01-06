@@ -23,7 +23,6 @@ const PlacesAutoComplete = () => {
 
   const handleSelect = (val) => {
     setValue(val, false);
-    console.log(val);
   };
 
   return (

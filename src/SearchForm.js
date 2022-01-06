@@ -1,19 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import PlacesAutoComplete from "./PlacesAutoComplete";
 
 const SearchForm = (props) => {
-  const handleOriginChange = (originValue) => {
-    props.setOrigin(originValue);
-  };
-
-  const handleDestinationChange = (destinationValue) => {
-    props.setDestination(destinationValue);
+  const handleSearchFormSubmit = (event) => {
+    props.setOrigin(event.target[0].value);
+    props.setDestination(event.target[1].value);
+    event.preventDefault();
   };
 
   return (
     <form onSubmit={handleSearchFormSubmit}>
-      <PlacesAutoComplete onOriginChange={handleOriginChange} />
-      <PlacesAutoComplete onDestinationChange={handleDestinationChange} />
+      <PlacesAutoComplete />
+      <PlacesAutoComplete />
       <input type="submit" value="Submit" />
     </form>
   );
